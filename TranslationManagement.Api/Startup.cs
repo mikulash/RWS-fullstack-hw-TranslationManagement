@@ -1,3 +1,4 @@
+using BusinessLayer.Services;
 using DataAccessLayer;
 using DataAccessLayer.UnitOfWork;
 using Microsoft.AspNetCore.Builder;
@@ -30,6 +31,8 @@ namespace TranslationManagement.Api
                 options.UseSqlite("Data Source=TranslationAppDatabase.db"));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ITranslatorService, TranslatorService>();
+            services.AddScoped<ITranslationJobService, TranslationJobService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -1,6 +1,6 @@
 ﻿namespace BusinessLayer.Services;
 
-public class TranslatorService
+public class TranslatorService : ITranslatorService
 {
-    
+
 }
