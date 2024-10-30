@@ -6,11 +6,11 @@ namespace DataAccessLayer.UnitOfWork;
 
 public class UnitOfWork(AppDbContext context): IUnitOfWork
 {
-    private ITranslatorJobRepository? _translationJobs;
+    private ITranslationJobRepository? _translationJobs;
     private ITranslatorRepository? _translators;
 
     // get the repository if it exists, otherwise create a new one
-    public ITranslatorJobRepository TranslationJobs => _translationJobs ??= new TranslationJobRepository(context);
+    public ITranslationJobRepository TranslationJobs => _translationJobs ??= new TranslationJobRepository(context);
     public ITranslatorRepository Translators => _translators ??= new TranslatorRepository(context);
 
     public async Task<bool> Commit()

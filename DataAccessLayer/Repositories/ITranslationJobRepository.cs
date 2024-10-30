@@ -2,7 +2,7 @@
 
 namespace DataAccessLayer.Repositories;
 
-public interface ITranslatorJobRepository :  IRepository<TranslationJob>
+public interface ITranslationJobRepository :  IRepository<TranslationJob>
 {
 
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repositories;
 
-public class TranslationJobRepository(AppDbContext context) : ITranslatorJobRepository
+public class TranslationJobRepository(AppDbContext context) : ITranslationJobRepository
 {
     public void Add(TranslationJob entity)
     {
