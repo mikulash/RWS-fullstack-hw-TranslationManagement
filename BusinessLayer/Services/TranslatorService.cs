@@ -30,10 +30,7 @@ public class TranslatorService(IUnitOfWork unitOfWork) : ITranslatorService
     public bool UpdateTranslatorStatus(int translatorId, TranslatorStatus newStatus)
     {
         var translator = unitOfWork.Translators.GetByIdAsync(translatorId).Result;
-        if (translator == null)
-        {
-            throw new KeyNotFoundException("Translator not found");
-        }
+        if (translator == null) throw new KeyNotFoundException("Translator not found");
 
         translator.Status = Enum.GetName(typeof(TranslatorStatus), newStatus) ?? "Applicant";
         unitOfWork.Translators.Update(translator);

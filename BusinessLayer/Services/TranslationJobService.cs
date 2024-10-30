@@ -12,11 +12,6 @@ public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobServ
 {
     private const double PricePerCharacter = 0.01;
 
-    private static double CalculatePrice(string content, double pricePerCharacter = PricePerCharacter)
-    {
-        return content.Length * pricePerCharacter;
-    }
-
     public TranslationJobDto[] GetJobs()
     {
         var translationJobs = unitOfWork.TranslationJobs.GetAllAsync().Result;
@@ -35,10 +30,7 @@ public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobServ
     public bool UpdateJobStatus(int jobId, JobStatus status)
     {
         var translationJob = unitOfWork.TranslationJobs.GetByIdAsync(jobId).Result;
-        if (translationJob == null)
-        {
-            return false;
-        }
+        if (translationJob == null) return false;
 
         translationJob.Status = Enum.GetName(typeof(JobStatus), status) ?? "New";
         unitOfWork.TranslationJobs.Update(translationJob);
@@ -68,11 +60,11 @@ public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobServ
             throw new NotSupportedException("unsupported file");
         }
 
-        var newJob = new CreateTranslationJobDto()
+        var newJob = new CreateTranslationJobDto
         {
             OriginalContent = content,
             TranslatedContent = "",
-            CustomerName = customer,
+            CustomerName = customer
         };
 
         newJob.Price = CalculatePrice(newJob.OriginalContent);
@@ -80,4 +72,8 @@ public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobServ
         return CreateTranslationJob(newJob);
     }
 
+    private static double CalculatePrice(string content, double pricePerCharacter = PricePerCharacter)
+    {
+        return content.Length * pricePerCharacter;
+    }
 }

@@ -6,4 +6,3 @@ public enum JobStatus
     InProgress,
     Completed
 }
-

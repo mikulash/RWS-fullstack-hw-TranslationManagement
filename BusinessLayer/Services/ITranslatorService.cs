@@ -10,5 +10,4 @@ public interface ITranslatorService
 
     public bool AddTranslator(TranslatorDto translatorDto);
     public bool UpdateTranslatorStatus(int translatorId, TranslatorStatus newStatus);
-
 }
