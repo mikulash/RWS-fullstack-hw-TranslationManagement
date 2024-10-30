@@ -35,31 +35,29 @@ public class TranslationJobController(
     public IActionResult CreateJob(CreateTranslationJobDto job)
     {
         var retval = translationJobService.CreateTranslationJob(job);
-        if (retval)
-        {
-            var notificationSvc = new UnreliableNotificationService();
-            const int maxRetries = 3;
-            var attempts = 0;
-            while (attempts < maxRetries)
-            {
-                try
-                {
-                    var result = notificationSvc.SendNotification("Job created: " + job.Id).Result;
-                    if (result) return Ok();
-                }
-                catch (ApplicationException ex)
-                {
-                    logger.LogError(ex, "Attempt {Attempt} failed with error: {ErrorMessage}", attempts + 1,
-                        ex.Message);
-                }
+        if (!retval) return BadRequest();
 
-                attempts++;
+        var notificationSvc = new UnreliableNotificationService();
+        const int maxRetries = 3;
+        var attempts = 0;
+        while (attempts < maxRetries)
+        {
+            try
+            {
+                var result = notificationSvc.SendNotification("Job created: " + job.Id).Result;
+                if (result) return Ok();
+            }
+            catch (ApplicationException ex)
+            {
+                logger.LogError(ex, "Attempt {Attempt} failed with error: {ErrorMessage}", attempts + 1,
+                    ex.Message);
             }
 
-            return Ok();
+            attempts++;
         }
 
-        return BadRequest();
+        return Ok();
+
     }
 
     [HttpPost]
