@@ -13,7 +13,7 @@ namespace TranslationManagement.Api.Controllers
     [ApiController]
     [Route("api/jobs/[action]")]
     public class TranslationJobController(
-        TranslationJobService translationJobService,
+        ITranslationJobService translationJobService,
         ILogger<TranslatorManagementController> logger)
         : ControllerBase
     {
