@@ -16,26 +16,17 @@ namespace TranslationManagement.Api.Controllers
 {
     [ApiController]
     [Route("api/jobs/[action]")]
-    public class TranslationJobController : ControllerBase
+    public class TranslationJobController(IUnitOfWork unitOfWork, ILogger<TranslatorManagementController> logger)
+        : ControllerBase
     {
-
-        private readonly ILogger<TranslatorManagementController> _logger;
-        private readonly IUnitOfWork _unitOfWork;
-
-
-        public TranslationJobController(IUnitOfWork unitOfWork, ILogger<TranslatorManagementController> logger)
-        {
-            _unitOfWork = unitOfWork;
-            _logger = logger;
-        }
-
         [HttpGet]
         public TranslationJob[] GetJobs()
         {
-            return _unitOfWork.TranslationJobs.GetAllAsync().Result.ToArray();
+            return unitOfWork.TranslationJobs.GetAllAsync().Result.ToArray();
         }
 
         const double PricePerCharacter = 0.01;
+
         private void SetPrice(TranslationJob job)
         {
             job.Price = job.OriginalContent.Length * PricePerCharacter;
@@ -46,9 +37,9 @@ namespace TranslationManagement.Api.Controllers
         {
             job.Status = "New";
             SetPrice(job);
-            _unitOfWork.TranslationJobs.Add(job);
+            unitOfWork.TranslationJobs.Add(job);
 
-            bool success = _unitOfWork.Commit().Result;
+            bool success = unitOfWork.Commit().Result;
             if (success)
             {
                 var notificationSvc = new UnreliableNotificationService();
@@ -56,7 +47,7 @@ namespace TranslationManagement.Api.Controllers
                 {
                 }
 
-                _logger.LogInformation("New job notification sent");
+                logger.LogInformation("New job notification sent");
             }
 
             return success;
@@ -98,13 +89,14 @@ namespace TranslationManagement.Api.Controllers
         [HttpPost]
         public string UpdateJobStatus(int jobId, int translatorId, string newStatus = "")
         {
-            _logger.LogInformation("Job status update request received: " + newStatus + " for job " + jobId.ToString() + " by translator " + translatorId);
+            logger.LogInformation("Job status update request received: " + newStatus + " for job " + jobId.ToString() +
+                                  " by translator " + translatorId);
             if (typeof(JobStatuses).GetProperties().Count(prop => prop.Name == newStatus) == 0)
             {
                 return "invalid status";
             }
 
-            var job = _unitOfWork.TranslationJobs.GetByIdAsync(jobId).Result;
+            var job = unitOfWork.TranslationJobs.GetByIdAsync(jobId).Result;
 
             bool isInvalidStatusChange = (job.Status == JobStatuses.New && newStatus == JobStatuses.Completed) ||
                                          job.Status == JobStatuses.Completed || newStatus == JobStatuses.New;
@@ -115,9 +107,8 @@ namespace TranslationManagement.Api.Controllers
 
             job.Status = newStatus;
 
-
-            _unitOfWork.TranslationJobs.Update(job);
-            _unitOfWork.Commit();
+            unitOfWork.TranslationJobs.Update(job);
+            unitOfWork.Commit();
             return "updated";
         }
     }
