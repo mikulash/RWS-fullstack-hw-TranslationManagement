@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BusinessLayer.Dtos;
 using BusinessLayer.Services;
 using DataAccessLayer.Enums;
@@ -38,15 +39,21 @@ public class TranslationJobController(
         var retval = translationJobService.CreateTranslationJob(job);
         if (!retval) return BadRequest();
 
+        Task.Run(async () => { await NotifyJobCreationAsync(job.CustomerName); });
+
+        return Ok();
+    }
+
+    private async Task NotifyJobCreationAsync(string customerName, int maxRetries = 3)
+    {
         var notificationSvc = new UnreliableNotificationService();
-        const int maxRetries = 3;
         var attempts = 0;
         while (attempts < maxRetries)
         {
             try
             {
-                var result = notificationSvc.SendNotification("Job created for customer: " + job.CustomerName).Result;
-                if (result) return Ok();
+                var result = await notificationSvc.SendNotification("Job created for customer: " + customerName);
+                if (result) logger.LogInformation("Notification sent successfully");
             }
             catch (ApplicationException ex)
             {
@@ -57,8 +64,7 @@ public class TranslationJobController(
             attempts++;
         }
 
-        return Ok();
-
+        logger.LogError("Failed to send notification after {MaxRetries} attempts", maxRetries);
     }
 
     [HttpPost]
