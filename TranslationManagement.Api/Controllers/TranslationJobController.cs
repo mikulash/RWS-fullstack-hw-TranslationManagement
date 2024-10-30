@@ -44,7 +44,7 @@ public class TranslationJobController(
         {
             try
             {
-                var result = notificationSvc.SendNotification("Job created: " + job.Id).Result;
+                var result = notificationSvc.SendNotification("Job created for customer: " + job.CustomerName).Result;
                 if (result) return Ok();
             }
             catch (ApplicationException ex)
