@@ -20,7 +20,7 @@ public class TranslatorService(IUnitOfWork unitOfWork) : ITranslatorService
         return translators.Adapt<IEnumerable<TranslatorDto>>();
     }
 
-    public bool AddTranslator(TranslatorDto translatorDto)
+    public bool AddTranslator(CreateTranslatorDto translatorDto)
     {
         var translator = translatorDto.Adapt<Translator>();
         unitOfWork.Translators.Add(translator);

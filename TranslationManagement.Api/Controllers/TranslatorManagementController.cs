@@ -42,7 +42,7 @@ public class TranslatorManagementController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult AddTranslator(TranslatorDto translator)
+    public IActionResult AddTranslator(CreateTranslatorDto translator)
     {
         var result = translatorService.AddTranslator(translator);
         if (result) return Ok();
