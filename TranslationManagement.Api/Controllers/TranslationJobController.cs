@@ -67,6 +67,8 @@ public class TranslationJobController(
     {
         try
         {
+            if (file.Length == 0) return BadRequest("File is empty");
+
             var result = translationJobService.CreateJobWithFile(file, customer);
             return result ? Ok() : BadRequest();
         }

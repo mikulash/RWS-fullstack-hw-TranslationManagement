@@ -56,6 +56,8 @@ public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration config
 
         if (file.FileName.EndsWith(".txt"))
         {
+            if (customer == "") throw new InvalidOperationException("Customer name is missing");
+
             var content = reader.ReadToEnd();
             newJob = new CreateTranslationJobDto
             {
