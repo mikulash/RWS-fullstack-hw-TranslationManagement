@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BusinessLayer.Dtos;
 using BusinessLayer.Services;
 using DataAccessLayer.Enums;
@@ -23,7 +24,7 @@ public class TranslationJobController(
     public IActionResult GetJobs()
     {
         var jobs = translationJobService.GetJobs();
-        if (jobs.Length == 0) return NotFound();
+        if (!jobs.Any()) return NotFound();
 
         return Ok(jobs);
     }

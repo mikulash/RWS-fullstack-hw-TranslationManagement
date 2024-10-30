@@ -23,10 +23,10 @@ public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration config
         }
     }
 
-    public TranslationJobDto[] GetJobs()
+    public IEnumerable<TranslationJobDto> GetJobs()
     {
         var translationJobs = unitOfWork.TranslationJobs.GetAllAsync().Result;
-        return translationJobs.Adapt<TranslationJobDto[]>();
+        return translationJobs.Adapt<IEnumerable<TranslationJobDto>>();
     }
 
     public bool CreateTranslationJob(CreateTranslationJobDto createTranslationJobDto)
@@ -97,7 +97,6 @@ public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration config
 
     private double CalculatePrice(string content)
     {
-        var pricePerCharacter = _currentPricePerCharacter;
-        return content.Length * pricePerCharacter;
+        return content.Length * _currentPricePerCharacter;
     }
 }

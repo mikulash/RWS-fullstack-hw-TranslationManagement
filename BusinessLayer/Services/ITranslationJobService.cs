@@ -6,7 +6,7 @@ namespace BusinessLayer.Services;
 
 public interface ITranslationJobService
 {
-    public TranslationJobDto[] GetJobs();
+    public IEnumerable<TranslationJobDto> GetJobs();
 
     bool CreateTranslationJob(CreateTranslationJobDto createTranslationJobDto);
 
