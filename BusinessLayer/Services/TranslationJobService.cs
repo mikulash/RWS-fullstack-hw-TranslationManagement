@@ -39,35 +39,46 @@ public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration config
     public bool CreateJobWithFile(IFormFile file, string customer)
     {
         var reader = new StreamReader(file.OpenReadStream());
-        string content;
+
+        CreateTranslationJobDto newJob;
 
         if (file.FileName.EndsWith(".txt"))
         {
-            content = reader.ReadToEnd();
+            var content = reader.ReadToEnd();
+            newJob = new CreateTranslationJobDto
+            {
+                OriginalContent = content,
+                CustomerName = customer
+            };
         }
         else if (file.FileName.EndsWith(".xml"))
         {
-            var xdoc = XDocument.Parse(reader.ReadToEnd());
-            content = xdoc.Root?.Element("Content")?.Value ??
-                      throw new InvalidOperationException("Content element is missing");
-            // todo check xml and fix overwriting customer
-            customer = xdoc.Root?.Element("Customer")?.Value.Trim() ??
-                       throw new InvalidOperationException("Customer element is missing");
+            newJob = ParseJobXml(file);
         }
         else
         {
-            throw new NotSupportedException("unsupported file");
+            throw new NotSupportedException("unsupported file type");
         }
 
-        var newJob = new CreateTranslationJobDto
+        newJob.Price = CalculatePrice(newJob.OriginalContent);
+
+        return CreateTranslationJob(newJob);
+    }
+
+    private static CreateTranslationJobDto ParseJobXml(IFormFile file)
+    {
+        var reader = new StreamReader(file.OpenReadStream());
+        var xdoc = XDocument.Parse(reader.ReadToEnd());
+        var content = xdoc.Root?.Element("Content")?.Value ??
+                      throw new InvalidOperationException("Content element is missing");
+        var customer = xdoc.Root?.Element("Customer")?.Value.Trim() ??
+                       throw new InvalidOperationException("Customer element is missing");
+        return new CreateTranslationJobDto
         {
             OriginalContent = content,
             CustomerName = customer
         };
 
-        newJob.Price = CalculatePrice(newJob.OriginalContent);
-
-        return CreateTranslationJob(newJob);
     }
 
     private double CalculatePrice(string content)
