@@ -1,8 +1,10 @@
-﻿namespace BusinessLayer.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BusinessLayer.Dtos;
 
 public class CreateTranslationJobDto
 {
-    public string CustomerName { get; set; }
-    public string OriginalContent { get; set; }
-    public double Price { get; set; }
+    [Required] public string CustomerName { get; set; }
+
+    [Required] public string OriginalContent { get; set; }
 }
