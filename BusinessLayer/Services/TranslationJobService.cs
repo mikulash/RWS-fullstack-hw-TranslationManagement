@@ -11,6 +11,18 @@ namespace BusinessLayer.Services;
 
 public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration configuration) : ITranslationJobService
 {
+    private double _currentPricePerCharacter
+    {
+        get
+        {
+            const double defaultPricePerCharacter = 0.01;
+            var price = configuration["PricePerCharacter"];
+
+            if (price == null || !double.TryParse(price, out var parsedPrice)) return defaultPricePerCharacter;
+            return parsedPrice;
+        }
+    }
+
     public TranslationJobDto[] GetJobs()
     {
         var translationJobs = unitOfWork.TranslationJobs.GetAllAsync().Result;
@@ -83,17 +95,7 @@ public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration config
 
     private double CalculatePrice(string content)
     {
-        var pricePerCharacter = CurrentPricePerCharacter();
+        var pricePerCharacter = _currentPricePerCharacter;
         return content.Length * pricePerCharacter;
-    }
-
-    private double CurrentPricePerCharacter()
-    {
-        const double defaultPricePerCharacter = 0.01;
-
-        var price = configuration["PricePerCharacter"] != null
-            ? double.Parse(configuration["PricePerCharacter"]!)
-            : defaultPricePerCharacter;
-        return price;
     }
 }
