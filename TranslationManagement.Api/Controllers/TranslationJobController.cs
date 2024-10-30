@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BusinessLayer.Dtos;
 using BusinessLayer.Enums;
 using BusinessLayer.Services;
@@ -58,9 +59,26 @@ namespace TranslationManagement.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult CreateJobWithFile(IFormFile file, string customer)
         {
-            var result = translationJobService.CreateJobWithFile(file, customer);
-            return result ? Ok() : BadRequest();
-
+            try
+            {
+                var result = translationJobService.CreateJobWithFile(file, customer);
+                return result ? Ok() : BadRequest();
+            }
+            catch (InvalidOperationException e)
+            {
+                logger.LogError(e, e.Message);
+                return BadRequest(e.Message);
+            }
+            catch (NotSupportedException e)
+            {
+                logger.LogError(e, e.Message);
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, e.Message);
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPut]
