@@ -1,36 +1,40 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Xml.Linq;
+﻿using System.Collections.Generic;
 using BusinessLayer.Dtos;
 using BusinessLayer.Enums;
 using BusinessLayer.Services;
-using DataAccessLayer;
-using DataAccessLayer.Models;
-using DataAccessLayer.UnitOfWork;
 using External.ThirdParty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using TranslationManagement.Api.Enums;
 
 namespace TranslationManagement.Api.Controllers
 {
     [ApiController]
     [Route("api/jobs/[action]")]
-    public class TranslationJobController(TranslationJobService translationJobService, ILogger<TranslatorManagementController> logger)
+    public class TranslationJobController(
+        TranslationJobService translationJobService,
+        ILogger<TranslatorManagementController> logger)
         : ControllerBase
     {
         [HttpGet]
-        public TranslationJobDto[] GetJobs()
+        [ProducesResponseType(typeof(IEnumerable<TranslationJobDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetJobs()
         {
-            return translationJobService.GetJobs();
+            var jobs = translationJobService.GetJobs();
+            if (jobs.Length == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(jobs);
         }
 
 
         [HttpPost]
-        public bool CreateJob(CreateTranslationJobDto job)
+        [ProducesResponseType(typeof(IEnumerable<TranslationJobDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult CreateJob(CreateTranslationJobDto job)
         {
             var retval = translationJobService.CreateTranslationJob(job);
             if (retval)
@@ -42,26 +46,31 @@ namespace TranslationManagement.Api.Controllers
                 }
 
                 logger.LogInformation("New job notification sent");
+                return Ok();
             }
 
-            return retval;
+            return BadRequest();
+
         }
 
         [HttpPost]
-        public bool CreateJobWithFile(IFormFile file, string customer)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult CreateJobWithFile(IFormFile file, string customer)
         {
             var result = translationJobService.CreateJobWithFile(file, customer);
-            return result;
+            return result ? Ok() : BadRequest();
 
         }
 
-        [HttpPost]
-        public string UpdateJobStatus(int jobId, int translatorId, JobStatus newStatus = JobStatus.New)
+        [HttpPut]
+        public IActionResult UpdateJobStatus(int jobId, int translatorId, JobStatus newStatus = JobStatus.New)
         {
-            logger.LogInformation("Job status update request received: " + newStatus + " for job " + jobId + " by translator " + translatorId);
-
+            logger.LogInformation(
+                "Job status update request received: {NewStatus} for job {JobId} by translator {TranslatorId}",
+                newStatus, jobId, translatorId);
             var result = translationJobService.UpdateJobStatus(jobId, newStatus);
-            return result ? "updated" : "not found";
+            return result ? Ok() : BadRequest();
 
         }
     }
