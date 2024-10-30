@@ -1,5 +1,5 @@
-﻿using System.Xml.Linq;
-using BusinessLayer.Dtos;
+﻿using BusinessLayer.Dtos;
+using BusinessLayer.Utils.JobFileParser;
 using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
 using DataAccessLayer.UnitOfWork;
@@ -50,47 +50,10 @@ public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration config
 
     public bool CreateJobWithFile(IFormFile file, string customer)
     {
-        var reader = new StreamReader(file.OpenReadStream());
-
-        CreateTranslationJobDto newJob;
-
-        if (file.FileName.EndsWith(".txt"))
-        {
-            if (customer == "") throw new InvalidOperationException("Customer name is missing");
-
-            var content = reader.ReadToEnd();
-            newJob = new CreateTranslationJobDto
-            {
-                OriginalContent = content,
-                CustomerName = customer
-            };
-        }
-        else if (file.FileName.EndsWith(".xml"))
-        {
-            newJob = ParseJobXml(file);
-        }
-        else
-        {
-            throw new NotSupportedException("unsupported file type");
-        }
+        var parser = new JobFileParserContext(file.FileName);
+        var newJob = parser.Parse(file, customer);
 
         return CreateTranslationJob(newJob);
-    }
-
-    private static CreateTranslationJobDto ParseJobXml(IFormFile file)
-    {
-        var reader = new StreamReader(file.OpenReadStream());
-        var xdoc = XDocument.Parse(reader.ReadToEnd());
-        var content = xdoc.Root?.Element("Content")?.Value ??
-                      throw new InvalidOperationException("Content element is missing");
-        var customer = xdoc.Root?.Element("Customer")?.Value.Trim() ??
-                       throw new InvalidOperationException("Customer element is missing");
-        return new CreateTranslationJobDto
-        {
-            OriginalContent = content,
-            CustomerName = customer
-        };
-
     }
 
     private double CalculatePrice(string content)
