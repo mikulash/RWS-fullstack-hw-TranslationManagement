@@ -2,6 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using BusinessLayer.Dtos;
+using BusinessLayer.Enums;
+using BusinessLayer.Services;
 using DataAccessLayer;
 using DataAccessLayer.Models;
 using DataAccessLayer.UnitOfWork;
@@ -16,100 +19,50 @@ namespace TranslationManagement.Api.Controllers
 {
     [ApiController]
     [Route("api/jobs/[action]")]
-    public class TranslationJobController(IUnitOfWork unitOfWork, ILogger<TranslatorManagementController> logger)
+    public class TranslationJobController(TranslationJobService translationJobService, ILogger<TranslatorManagementController> logger)
         : ControllerBase
     {
         [HttpGet]
-        public TranslationJob[] GetJobs()
+        public TranslationJobDto[] GetJobs()
         {
-            return unitOfWork.TranslationJobs.GetAllAsync().Result.ToArray();
+            return translationJobService.GetJobs();
         }
 
-        const double PricePerCharacter = 0.01;
-
-        private void SetPrice(TranslationJob job)
-        {
-            job.Price = job.OriginalContent.Length * PricePerCharacter;
-        }
 
         [HttpPost]
-        public bool CreateJob(TranslationJob job)
+        public bool CreateJob(CreateTranslationJobDto job)
         {
-            job.Status = "New";
-            SetPrice(job);
-            unitOfWork.TranslationJobs.Add(job);
-
-            bool success = unitOfWork.Commit().Result;
-            if (success)
+            var retval = translationJobService.CreateTranslationJob(job);
+            if (retval)
             {
                 var notificationSvc = new UnreliableNotificationService();
                 while (!notificationSvc.SendNotification("Job created: " + job.Id).Result)
                 {
+                    // todo fix this retry logic
                 }
 
                 logger.LogInformation("New job notification sent");
             }
 
-            return success;
+            return retval;
         }
 
         [HttpPost]
         public bool CreateJobWithFile(IFormFile file, string customer)
         {
-            var reader = new StreamReader(file.OpenReadStream());
-            string content;
+            var result = translationJobService.CreateJobWithFile(file, customer);
+            return result;
 
-            if (file.FileName.EndsWith(".txt"))
-            {
-                content = reader.ReadToEnd();
-            }
-            else if (file.FileName.EndsWith(".xml"))
-            {
-                var xdoc = XDocument.Parse(reader.ReadToEnd());
-                content = xdoc.Root.Element("Content").Value;
-                customer = xdoc.Root.Element("Customer").Value.Trim();
-            }
-            else
-            {
-                throw new NotSupportedException("unsupported file");
-            }
-
-            var newJob = new TranslationJob()
-            {
-                OriginalContent = content,
-                TranslatedContent = "",
-                CustomerName = customer,
-            };
-
-            SetPrice(newJob);
-
-            return CreateJob(newJob);
         }
 
         [HttpPost]
-        public string UpdateJobStatus(int jobId, int translatorId, string newStatus = "")
+        public string UpdateJobStatus(int jobId, int translatorId, JobStatus newStatus = JobStatus.New)
         {
-            logger.LogInformation("Job status update request received: " + newStatus + " for job " + jobId.ToString() +
-                                  " by translator " + translatorId);
-            if (typeof(JobStatuses).GetProperties().Count(prop => prop.Name == newStatus) == 0)
-            {
-                return "invalid status";
-            }
+            logger.LogInformation("Job status update request received: " + newStatus + " for job " + jobId + " by translator " + translatorId);
 
-            var job = unitOfWork.TranslationJobs.GetByIdAsync(jobId).Result;
+            var result = translationJobService.UpdateJobStatus(jobId, newStatus);
+            return result ? "updated" : "not found";
 
-            bool isInvalidStatusChange = (job.Status == JobStatuses.New && newStatus == JobStatuses.Completed) ||
-                                         job.Status == JobStatuses.Completed || newStatus == JobStatuses.New;
-            if (isInvalidStatusChange)
-            {
-                return "invalid status change";
-            }
-
-            job.Status = newStatus;
-
-            unitOfWork.TranslationJobs.Update(job);
-            unitOfWork.Commit();
-            return "updated";
         }
     }
 }
