@@ -51,7 +51,7 @@ public class TranslatorManagementController(
 
     }
 
-    [HttpPost]
+    [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public IActionResult UpdateTranslatorStatus(int translatorId, TranslatorStatus newStatus)
