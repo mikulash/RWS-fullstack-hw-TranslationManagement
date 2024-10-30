@@ -116,7 +116,7 @@ namespace TranslationManagement.Api.Controllers
             job.Status = newStatus;
 
 
-            // _unitOfWork.TranslationJobs.Update(job);
+            _unitOfWork.TranslationJobs.Update(job);
             _unitOfWork.Commit();
             return "updated";
         }
