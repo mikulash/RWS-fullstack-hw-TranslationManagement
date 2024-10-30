@@ -5,13 +5,12 @@ using DataAccessLayer.Models;
 using DataAccessLayer.UnitOfWork;
 using Mapster;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace BusinessLayer.Services;
 
-public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobService
+public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration configuration) : ITranslationJobService
 {
-    private const double PricePerCharacter = 0.01;
-
     public TranslationJobDto[] GetJobs()
     {
         var translationJobs = unitOfWork.TranslationJobs.GetAllAsync().Result;
@@ -71,8 +70,19 @@ public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobServ
         return CreateTranslationJob(newJob);
     }
 
-    private static double CalculatePrice(string content, double pricePerCharacter = PricePerCharacter)
+    private double CalculatePrice(string content)
     {
+        var pricePerCharacter = CurrentPricePerCharacter();
         return content.Length * pricePerCharacter;
+    }
+
+    private double CurrentPricePerCharacter()
+    {
+        const double defaultPricePerCharacter = 0.01;
+
+        var price = configuration["PricePerCharacter"] != null
+            ? double.Parse(configuration["PricePerCharacter"]!)
+            : defaultPricePerCharacter;
+        return price;
     }
 }
