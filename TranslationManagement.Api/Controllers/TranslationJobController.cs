@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using DataAccessLayer;
 using DataAccessLayer.Models;
+using DataAccessLayer.UnitOfWork;
 using External.ThirdParty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,19 +19,20 @@ namespace TranslationManagement.Api.Controllers
     public class TranslationJobController : ControllerBase
     {
 
-        private AppDbContext _context;
         private readonly ILogger<TranslatorManagementController> _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TranslationJobController(IServiceScopeFactory scopeFactory, ILogger<TranslatorManagementController> logger)
+
+        public TranslationJobController(IUnitOfWork unitOfWork, ILogger<TranslatorManagementController> logger)
         {
-            _context = scopeFactory.CreateScope().ServiceProvider.GetService<AppDbContext>();
+            _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
         [HttpGet]
         public TranslationJob[] GetJobs()
         {
-            return _context.TranslationJobs.ToArray();
+            return _unitOfWork.TranslationJobs.GetAllAsync().Result.ToArray();
         }
 
         const double PricePerCharacter = 0.01;
@@ -44,8 +46,9 @@ namespace TranslationManagement.Api.Controllers
         {
             job.Status = "New";
             SetPrice(job);
-            _context.TranslationJobs.Add(job);
-            bool success = _context.SaveChanges() > 0;
+            _unitOfWork.TranslationJobs.Add(job);
+
+            bool success = _unitOfWork.Commit().Result;
             if (success)
             {
                 var notificationSvc = new UnreliableNotificationService();
@@ -101,7 +104,7 @@ namespace TranslationManagement.Api.Controllers
                 return "invalid status";
             }
 
-            var job = _context.TranslationJobs.Single(j => j.Id == jobId);
+            var job = _unitOfWork.TranslationJobs.GetByIdAsync(jobId).Result;
 
             bool isInvalidStatusChange = (job.Status == JobStatuses.New && newStatus == JobStatuses.Completed) ||
                                          job.Status == JobStatuses.Completed || newStatus == JobStatuses.New;
@@ -111,7 +114,10 @@ namespace TranslationManagement.Api.Controllers
             }
 
             job.Status = newStatus;
-            _context.SaveChanges();
+
+
+            // _unitOfWork.TranslationJobs.Update(job);
+            _unitOfWork.Commit();
             return "updated";
         }
     }
