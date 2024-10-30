@@ -46,18 +46,18 @@ namespace TranslationManagement.Api.Controllers
             return _unitOfWork.Commit().Result;
         }
 
-        // todo change status to enum
         // todo change retval to OK or not ok
         [HttpPost]
-        public string UpdateTranslatorStatus(int Translator, string newStatus = "")
+        public string UpdateTranslatorStatus(int translatorId, string newStatus = "")
         {
-            _logger.LogInformation("User status update request: " + newStatus + " for user " + Translator.ToString());
-            // if (TranslatorStatuses.Where(status => status == newStatus).Count() == 0)
-            // {
-            //     throw new ArgumentException("unknown status");
-            // }
+            _logger.LogInformation("User status update request: " + newStatus + " for user " + translatorId.ToString());
+            // todo change status to enum
+            if (TranslatorStatuses.Where(status => status == newStatus).Count() == 0)
+            {
+                throw new ArgumentException("unknown status");
+            }
 
-            var translator = _unitOfWork.Translators.GetByIdAsync(Translator).Result;
+            var translator = _unitOfWork.Translators.GetByIdAsync(translatorId).Result;
             if (translator == null)
             {
                 throw new KeyNotFoundException("Translator not found");
