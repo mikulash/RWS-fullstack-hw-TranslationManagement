@@ -5,8 +5,8 @@ namespace DataAccessLayer.UnitOfWork;
 
 public interface IUnitOfWork
 {
-    IRepository<TranslationJob> TranslationJobs { get; }
-    IRepository<Translator> Translators { get; }
+    ITranslatorJobRepository TranslationJobs { get; }
+    ITranslatorRepository Translators { get; }
 
     Task Commit();
     Task Rollback();

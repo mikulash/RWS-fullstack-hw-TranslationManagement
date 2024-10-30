@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repositories;
 
-public class TranslatorRepository(AppDbContext context) : IRepository<Translator>
+public class TranslatorRepository(AppDbContext context) :ITranslatorRepository
 {
     public void Add(Translator entity)
     {
@@ -28,5 +28,10 @@ public class TranslatorRepository(AppDbContext context) : IRepository<Translator
     public async Task<IEnumerable<Translator>> GetAllAsync()
     {
         return await context.Translators.ToListAsync();
+    }
+
+    public async Task<IEnumerable<Translator>> FindByNameAsync(string name)
+    {
+        return await context.Translators.Where(t => t.Name == name).ToListAsync();
     }
 }
