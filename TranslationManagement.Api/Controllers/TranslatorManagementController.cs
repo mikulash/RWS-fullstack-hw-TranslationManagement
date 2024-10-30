@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BusinessLayer.Dtos;
+using BusinessLayer.Services;
 using DataAccessLayer;
 using DataAccessLayer.Models;
 using DataAccessLayer.UnitOfWork;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,29 +15,48 @@ namespace TranslationManagement.Api.Controllers
 {
     [ApiController]
     [Route("api/TranslatorsManagement/[action]")]
-    public class TranslatorManagementController(IUnitOfWork unitOfWork, ILogger<TranslatorManagementController> logger)
+    public class TranslatorManagementController(ITranslatorService translatorService, ILogger<TranslatorManagementController> logger)
         : ControllerBase
     {
         public static readonly string[] TranslatorStatuses = { "Applicant", "Certified", "Deleted" };
 
 
         [HttpGet]
-        public Translator[] GetTranslators()
+        [ProducesResponseType(typeof(IEnumerable<Translator>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetTranslators()
         {
-            return unitOfWork.Translators.GetAllAsync().Result.ToArray();
+            var translators = translatorService.GetAllTranslators();
+            if(translators.Any())
+            {
+                return Ok(translators);
+            }
+            return NotFound();
         }
 
         [HttpGet]
-        public Translator[] GetTranslatorsByName(string name)
+        [ProducesResponseType(typeof(IEnumerable<Translator>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetTranslatorsByName(string name)
         {
-            return unitOfWork.Translators.FindByNameAsync(name).Result.ToArray();
+            var translators = translatorService.GetTranslatorsByName(name);
+            if (translators.Any())
+            {
+                return Ok(translators);
+            }
+            return NotFound();
         }
 
         [HttpPost]
-        public bool AddTranslator(Translator translator)
+        public IActionResult AddTranslator(TranslatorDto translator)
         {
-            unitOfWork.Translators.Add(translator);
-            return unitOfWork.Commit().Result;
+            var result = translatorService.AddTranslator(translator);
+            if (result)
+            {
+                return Ok();
+            }
+            return BadRequest();
+
         }
 
         // todo change retval to OK or not ok

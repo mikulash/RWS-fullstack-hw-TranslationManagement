@@ -11,6 +11,7 @@ namespace BusinessLayer.Services;
 public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobService
 {
     private const double PricePerCharacter = 0.01;
+
     private static double CalculatePrice(string content, double pricePerCharacter = PricePerCharacter)
     {
         return content.Length * pricePerCharacter;
@@ -56,8 +57,11 @@ public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobServ
         else if (file.FileName.EndsWith(".xml"))
         {
             var xdoc = XDocument.Parse(reader.ReadToEnd());
-            content = xdoc.Root?.Element("Content")?.Value ?? throw new InvalidOperationException("Content element is missing");
-            customer = xdoc.Root?.Element("Customer")?.Value.Trim() ?? throw new InvalidOperationException("Customer element is missing");
+            content = xdoc.Root?.Element("Content")?.Value ??
+                      throw new InvalidOperationException("Content element is missing");
+            // todo check xml and fix overwriting customer
+            customer = xdoc.Root?.Element("Customer")?.Value.Trim() ??
+                       throw new InvalidOperationException("Customer element is missing");
         }
         else
         {
@@ -74,6 +78,6 @@ public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobServ
         newJob.Price = CalculatePrice(newJob.OriginalContent);
 
         return CreateTranslationJob(newJob);
-
     }
+
 }
