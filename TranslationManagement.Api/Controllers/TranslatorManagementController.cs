@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DataAccessLayer;
 using DataAccessLayer.Models;
+using DataAccessLayer.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,47 +19,53 @@ namespace TranslationManagement.Api.Controllers
         public static readonly string[] TranslatorStatuses = { "Applicant", "Certified", "Deleted" };
 
         private readonly ILogger<TranslatorManagementController> _logger;
-        private AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TranslatorManagementController(IServiceScopeFactory scopeFactory, ILogger<TranslatorManagementController> logger)
+        public TranslatorManagementController(IUnitOfWork unitOfWork, ILogger<TranslatorManagementController> logger)
         {
-            _context = scopeFactory.CreateScope().ServiceProvider.GetService<AppDbContext>();
+           _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
         [HttpGet]
         public Translator[] GetTranslators()
         {
-            return _context.Translators.ToArray();
+            return _unitOfWork.Translators.GetAllAsync().Result.ToArray();
         }
 
         [HttpGet]
         public Translator[] GetTranslatorsByName(string name)
         {
-            return _context.Translators.Where(t => t.Name == name).ToArray();
+            return _unitOfWork.Translators.FindByNameAsync(name).Result.ToArray();
         }
 
         [HttpPost]
         public bool AddTranslator(Translator translator)
         {
-            _context.Translators.Add(translator);
-            return _context.SaveChanges() > 0;
+            _unitOfWork.Translators.Add(translator);
+            return _unitOfWork.Commit().Result;
         }
 
+        // todo change status to enum
+        // todo change retval to OK or not ok
         [HttpPost]
         public string UpdateTranslatorStatus(int Translator, string newStatus = "")
         {
             _logger.LogInformation("User status update request: " + newStatus + " for user " + Translator.ToString());
-            if (TranslatorStatuses.Where(status => status == newStatus).Count() == 0)
+            // if (TranslatorStatuses.Where(status => status == newStatus).Count() == 0)
+            // {
+            //     throw new ArgumentException("unknown status");
+            // }
+
+            var translator = _unitOfWork.Translators.GetByIdAsync(Translator).Result;
+            if (translator == null)
             {
-                throw new ArgumentException("unknown status");
+                throw new KeyNotFoundException("Translator not found");
             }
+            translator.Status = newStatus;
+            _unitOfWork.Translators.Update(translator);
+            return _unitOfWork.Commit().Result ? "updated" : "failed";
 
-            var job = _context.Translators.Single(j => j.Id == Translator);
-            job.Status = newStatus;
-            _context.SaveChanges();
-
-            return "updated";
         }
     }
 }
