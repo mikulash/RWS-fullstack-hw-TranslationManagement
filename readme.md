@@ -1,3 +1,16 @@
+# devtools
+### DB migrations
+to create migration run the following command
+
+```bash
+ dotnet ef migrations add <NAME> --project DataAccessLayer --startup-project TranslationManagement.Api
+```
+
+to update the database run the following command
+```bash
+dotnet ef database update --project DataAccessLayer --startup-project TranslationManagement.Api
+```
+
 # Project description
 This app should help us manage translators and jobs they work on. 
 It is currently a working proof of concept but it needs a bit of polishing and a couple of features. 
