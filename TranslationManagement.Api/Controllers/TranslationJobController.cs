@@ -1,14 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Xml;
 using System.Xml.Linq;
+using DataAccessLayer;
+using DataAccessLayer.Models;
 using External.ThirdParty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TranslationManagement.Api.Controlers;
+using TranslationManagement.Api.Enums;
 
 namespace TranslationManagement.Api.Controllers
 {
@@ -16,22 +18,6 @@ namespace TranslationManagement.Api.Controllers
     [Route("api/jobs/[action]")]
     public class TranslationJobController : ControllerBase
     {
-        public class TranslationJob
-        {
-            public int Id { get; set; }
-            public string CustomerName { get; set; }
-            public string Status { get; set; }
-            public string OriginalContent { get; set; }
-            public string TranslatedContent { get; set; }
-            public double Price { get; set; }
-        }
-
-        static class JobStatuses
-        {
-            internal static readonly string New = "New";
-            internal static readonly string Inprogress = "InProgress";
-            internal static readonly string Completed = "Completed";
-        }
 
         private AppDbContext _context;
         private readonly ILogger<TranslatorManagementController> _logger;

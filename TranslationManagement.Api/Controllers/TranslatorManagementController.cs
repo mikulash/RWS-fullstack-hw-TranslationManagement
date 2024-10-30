@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using DataAccessLayer;
+using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,14 +12,7 @@ namespace TranslationManagement.Api.Controlers
     [Route("api/TranslatorsManagement/[action]")]
     public class TranslatorManagementController : ControllerBase
     {
-        public class TranslatorModel
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string HourlyRate { get; set; }
-            public string Status { get; set; }
-            public string CreditCardNumber { get; set; }
-        }
+
 
         public static readonly string[] TranslatorStatuses = { "Applicant", "Certified", "Deleted" };
 
@@ -48,7 +43,7 @@ namespace TranslationManagement.Api.Controlers
             _context.Translators.Add(translator);
             return _context.SaveChanges() > 0;
         }
-        
+
         [HttpPost]
         public string UpdateTranslatorStatus(int Translator, string newStatus = "")
         {
