@@ -63,7 +63,6 @@ public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobServ
         var newJob = new CreateTranslationJobDto
         {
             OriginalContent = content,
-            TranslatedContent = "",
             CustomerName = customer
         };
 
