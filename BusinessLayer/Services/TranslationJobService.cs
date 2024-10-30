@@ -56,8 +56,8 @@ public class TranslationJobService(IUnitOfWork unitOfWork) : ITranslationJobServ
         else if (file.FileName.EndsWith(".xml"))
         {
             var xdoc = XDocument.Parse(reader.ReadToEnd());
-            content = xdoc.Root.Element("Content").Value;
-            customer = xdoc.Root.Element("Customer").Value.Trim();
+            content = xdoc.Root?.Element("Content")?.Value ?? throw new InvalidOperationException("Content element is missing");
+            customer = xdoc.Root?.Element("Customer")?.Value.Trim() ?? throw new InvalidOperationException("Customer element is missing");
         }
         else
         {
