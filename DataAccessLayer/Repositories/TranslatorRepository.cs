@@ -20,7 +20,7 @@ public class TranslatorRepository(AppDbContext context) :ITranslatorRepository
         context.Translators.Remove(entity);
     }
 
-    public async Task<Translator?> GetByIdAsync(Guid id)
+    public async Task<Translator?> GetByIdAsync(int id)
     {
         return await context.Translators.FindAsync(id);
     }

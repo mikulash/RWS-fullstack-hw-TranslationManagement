@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repositories;
 
-public class TranslationJobRepository(AppDbContext context) : IRepository<TranslationJob>
+public class TranslationJobRepository(AppDbContext context) : ITranslatorJobRepository
 {
     public void Add(TranslationJob entity)
     {
@@ -20,7 +20,7 @@ public class TranslationJobRepository(AppDbContext context) : IRepository<Transl
         context.TranslationJobs.Remove(entity);
     }
 
-    public async Task<TranslationJob?> GetByIdAsync(Guid id)
+    public async Task<TranslationJob?> GetByIdAsync(int id)
     {
         return await context.TranslationJobs.FindAsync(id);
     }

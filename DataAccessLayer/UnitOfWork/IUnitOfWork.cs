@@ -8,6 +8,6 @@ public interface IUnitOfWork
     ITranslatorJobRepository TranslationJobs { get; }
     ITranslatorRepository Translators { get; }
 
-    Task Commit();
+    Task<bool> Commit();
     Task Rollback();
 }
