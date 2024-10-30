@@ -88,6 +88,8 @@ public class TranslationJobController(
     }
 
     [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public IActionResult UpdateJobStatus(int jobId, int translatorId, JobStatus newStatus = JobStatus.New)
     {
         logger.LogInformation(
@@ -95,6 +97,5 @@ public class TranslationJobController(
             newStatus, jobId, translatorId);
         var result = translationJobService.UpdateJobStatus(jobId, newStatus);
         return result ? Ok() : BadRequest();
-
     }
 }
