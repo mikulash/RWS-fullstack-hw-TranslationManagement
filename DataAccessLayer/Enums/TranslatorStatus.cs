@@ -1,4 +1,4 @@
-﻿namespace BusinessLayer.Enums;
+﻿namespace DataAccessLayer.Enums;
 
 public enum TranslatorStatus
 {

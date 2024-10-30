@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using BusinessLayer.Dtos;
-using BusinessLayer.Enums;
 using BusinessLayer.Services;
+using DataAccessLayer.Enums;
 using External.ThirdParty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

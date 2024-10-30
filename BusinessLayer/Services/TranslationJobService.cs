@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 using BusinessLayer.Dtos;
-using BusinessLayer.Enums;
+using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
 using DataAccessLayer.UnitOfWork;
 using Mapster;
@@ -20,7 +20,7 @@ public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration config
     public bool CreateTranslationJob(CreateTranslationJobDto createTranslationJobDto)
     {
         var translationJob = createTranslationJobDto.Adapt<TranslationJob>();
-        translationJob.Status = Enum.GetName(typeof(JobStatus), JobStatus.New) ?? "New";
+        translationJob.Status = JobStatus.New;
         translationJob.Price = CalculatePrice(translationJob.OriginalContent);
         unitOfWork.TranslationJobs.Add(translationJob);
         return unitOfWork.Commit().Result;
@@ -31,7 +31,7 @@ public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration config
         var translationJob = unitOfWork.TranslationJobs.GetByIdAsync(jobId).Result;
         if (translationJob == null) return false;
 
-        translationJob.Status = Enum.GetName(typeof(JobStatus), status) ?? "New";
+        translationJob.Status = status;
         unitOfWork.TranslationJobs.Update(translationJob);
         return unitOfWork.Commit().Result;
     }

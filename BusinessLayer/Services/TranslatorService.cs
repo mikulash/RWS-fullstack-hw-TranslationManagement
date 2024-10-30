@@ -1,5 +1,5 @@
 ﻿using BusinessLayer.Dtos;
-using BusinessLayer.Enums;
+using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
 using DataAccessLayer.UnitOfWork;
 using Mapster;
@@ -32,7 +32,7 @@ public class TranslatorService(IUnitOfWork unitOfWork) : ITranslatorService
         var translator = unitOfWork.Translators.GetByIdAsync(translatorId).Result;
         if (translator == null) throw new KeyNotFoundException("Translator not found");
 
-        translator.Status = Enum.GetName(typeof(TranslatorStatus), newStatus) ?? "Applicant";
+        translator.Status = newStatus;
         unitOfWork.Translators.Update(translator);
         return unitOfWork.Commit().Result;
     }

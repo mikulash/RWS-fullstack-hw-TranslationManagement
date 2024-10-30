@@ -1,5 +1,5 @@
 ﻿using BusinessLayer.Dtos;
-using BusinessLayer.Enums;
+using DataAccessLayer.Enums;
 
 namespace BusinessLayer.Services;
 

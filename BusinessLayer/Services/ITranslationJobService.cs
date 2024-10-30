@@ -1,5 +1,5 @@
 ﻿using BusinessLayer.Dtos;
-using BusinessLayer.Enums;
+using DataAccessLayer.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace BusinessLayer.Services;
