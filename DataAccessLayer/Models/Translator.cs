@@ -1,6 +1,6 @@
 ﻿namespace DataAccessLayer.Models;
 
-public class TranslatorModel
+public class Translator
 {
     public int Id { get; set; }
     public string Name { get; set; }
