@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace TranslationManagement.Api.Controlers
+namespace TranslationManagement.Api.Controllers
 {
     [ApiController]
     [Route("api/TranslatorsManagement/[action]")]
@@ -26,19 +26,19 @@ namespace TranslationManagement.Api.Controlers
         }
 
         [HttpGet]
-        public TranslatorModel[] GetTranslators()
+        public Translator[] GetTranslators()
         {
             return _context.Translators.ToArray();
         }
 
         [HttpGet]
-        public TranslatorModel[] GetTranslatorsByName(string name)
+        public Translator[] GetTranslatorsByName(string name)
         {
             return _context.Translators.Where(t => t.Name == name).ToArray();
         }
 
         [HttpPost]
-        public bool AddTranslator(TranslatorModel translator)
+        public bool AddTranslator(Translator translator)
         {
             _context.Translators.Add(translator);
             return _context.SaveChanges() > 0;
