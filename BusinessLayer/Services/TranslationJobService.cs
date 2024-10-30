@@ -74,8 +74,6 @@ public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration config
             throw new NotSupportedException("unsupported file type");
         }
 
-        newJob.Price = CalculatePrice(newJob.OriginalContent);
-
         return CreateTranslationJob(newJob);
     }
 
