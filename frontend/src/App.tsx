@@ -2,7 +2,7 @@ import React from 'react';
 import TranslatorsList from "./components/TranslatorList.tsx";
 import TranslationJobsList from "./components/TranslationJobsList.tsx";
 import NewTranslatorForm from "./components/NewTranslatorForm.tsx";
-import AddTranslationJobForm from "./components/AddTranslationJobForm.tsx";
+import NewTranslationJobForm from "./components/NewTranslationJobForm.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 
@@ -19,7 +19,7 @@ const App: React.FC = () => {
                 <NewTranslatorForm/>
                 <Divider/>
                 <TranslationJobsList/>
-                <AddTranslationJobForm/>
+                <NewTranslationJobForm/>
 
             </div>
         </QueryClientProvider>

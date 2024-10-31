@@ -99,11 +99,11 @@ public class TranslationJobController(
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult UpdateJobStatus(int jobId, int translatorId, JobStatus newStatus = JobStatus.New)
+    public IActionResult UpdateJobStatus(int jobId, JobStatus newStatus = JobStatus.New)
     {
         logger.LogInformation(
-            "Job status update request received: {NewStatus} for job {JobId} by translator {TranslatorId}",
-            newStatus, jobId, translatorId);
+            "Job status update request received: {NewStatus} for job {JobId}",
+            newStatus, jobId);
         var result = translationJobService.UpdateJobStatus(jobId, newStatus);
         return result ? Ok() : BadRequest();
     }

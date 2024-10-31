@@ -1,9 +1,28 @@
 import {JobStatus, TranslationJobDto} from "../../generated-api";
+import {translationJobApi} from "../ApiClientConfig.ts";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
-export const TranslatorJobListItem = ({job, handleStatusChange}: {
+export const TranslationJobListItem = ({job}: {
     job: TranslationJobDto,
-    handleStatusChange: (id: number, status: JobStatus, translatorId?: number) => void
 }) => {
+    const queryClient = useQueryClient();
+    const statusMutation = useMutation({
+            mutationFn: async (newStatus: JobStatus) => {
+                await translationJobApi.apiJobsUpdateJobStatusPut(
+                    job.id!, newStatus
+                );
+            },
+            onSuccess: () => {
+                void queryClient.invalidateQueries({
+                    queryKey: ['translation-jobs'],
+                });
+            },
+            onError: (error: Error) => {
+                console.error('Failed to update job status', error);
+            }
+        }
+    );
+
     return (
         <li key={job.id}>
             <p>Customer Name: {job.customerName}</p>
@@ -16,7 +35,7 @@ export const TranslatorJobListItem = ({job, handleStatusChange}: {
                 <select
                     value={job.status as JobStatus}
                     onChange={(e) =>
-                        handleStatusChange(job.id!, e.target.value as JobStatus)
+                        statusMutation.mutate(e.target.value as JobStatus)
                     }
                 >
                     <option value={JobStatus.New}>New</option>

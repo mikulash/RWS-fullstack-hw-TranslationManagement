@@ -1,12 +1,30 @@
 import React, {useState} from 'react';
 import {CreateTranslationJobDto} from "../../generated-api";
 import {translationJobApi} from "../ApiClientConfig.ts";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
-
-const AddTranslationJobForm: React.FC = () => {
+const NewTranslationJobForm: React.FC = () => {
     const [customerName, setCustomerName] = useState<string>('');
     const [originalContent, setOriginalContent] = useState<string>('');
     const [message, setMessage] = useState<string>('');
+
+    const queryClient = useQueryClient();
+    const newTranslationJobMutation = useMutation({
+        mutationFn: async (newJob: CreateTranslationJobDto) => {
+            await translationJobApi.apiJobsCreateJobPost(newJob);
+        },
+        onSuccess: () => {
+            void queryClient.invalidateQueries({
+                queryKey: ['translation-jobs'],
+            });
+            setMessage('Translation job created successfully');
+        },
+        onError: (error: Error) => {
+            console.error('Failed to create translation job', error);
+            setMessage('Failed to create translation job');
+        }
+    });
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -16,13 +34,7 @@ const AddTranslationJobForm: React.FC = () => {
             originalContent,
         };
 
-        try {
-            await translationJobApi.apiJobsCreateJobPost(newJob);
-            setMessage('Translation job created successfully');
-        } catch (err) {
-            setMessage('Failed to create translation job');
-            console.error(err);
-        }
+        newTranslationJobMutation.mutate(newJob);
     };
 
     return (
@@ -53,4 +65,4 @@ const AddTranslationJobForm: React.FC = () => {
     );
 };
 
-export default AddTranslationJobForm;
+export default NewTranslationJobForm;
