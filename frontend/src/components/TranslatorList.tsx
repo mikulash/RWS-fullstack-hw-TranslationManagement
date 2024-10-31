@@ -27,7 +27,6 @@ const TranslatorsList: React.FC = () => {
     const handleStatusChange = async (translatorId: number, newStatus: TranslatorStatus) => {
         try {
             await translatorApi.apiTranslatorsManagementUpdateTranslatorStatusPut(translatorId, newStatus);
-            // Update the local state to reflect the change
             setTranslators((prevTranslators) =>
                 prevTranslators.map((translator) =>
                     translator.id === translatorId ? {...translator, status: newStatus} : translator
@@ -45,7 +44,7 @@ const TranslatorsList: React.FC = () => {
     if (error) {
         return <div>{error}</div>;
     }
-    
+
     return (
         <div>
             <h1>Translators List</h1>

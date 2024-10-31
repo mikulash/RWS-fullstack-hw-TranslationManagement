@@ -1,4 +1,3 @@
-// src/AddTranslatorForm.tsx
 import React, {useState} from 'react';
 import {CreateTranslatorDto, TranslatorStatus} from "../../generated-api";
 import {translatorApi} from "../ApiClientConfig.ts";
@@ -9,7 +8,7 @@ const AddTranslatorForm: React.FC = () => {
     const [hourlyRate, setHourlyRate] = useState<string>('');
     const [status, setStatus] = useState<TranslatorStatus>(TranslatorStatus.Applicant);
     const [creditCardNumber, setCreditCardNumber] = useState<string>('');
-    const [message, setMessage] = useState<string>('');
+    const [isUpdateSuccessMsg, setIsUpdateSuccessMsg] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,9 +22,9 @@ const AddTranslatorForm: React.FC = () => {
 
         try {
             await translatorApi.apiTranslatorsManagementAddTranslatorPost(newTranslator);
-            setMessage('Translator added successfully');
+            setIsUpdateSuccessMsg('Translator added successfully');
         } catch (err) {
-            setMessage('Failed to add translator');
+            setIsUpdateSuccessMsg('Failed to add translator');
             console.error(err);
         }
     };
@@ -60,7 +59,7 @@ const AddTranslatorForm: React.FC = () => {
                 </div>
                 <button type="submit">Add Translator</button>
             </form>
-            {message && <p>{message}</p>}
+            {isUpdateSuccessMsg && <p>{isUpdateSuccessMsg}</p>}
         </div>
     );
 };
