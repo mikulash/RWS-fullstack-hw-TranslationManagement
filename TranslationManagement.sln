@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLayer", "BusinessLa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer.Tests", "DataAccessLayer.Tests\DataAccessLayer.Tests.csproj", "{EC6F4307-C6EB-45EC-9B0A-A80E9F68278E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationManagement.Api.Tests", "TranslationManagement.Api.Tests\TranslationManagement.Api.Tests.csproj", "{285F8EEF-9F7A-48B7-BECB-1BF0BA85508A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{EC6F4307-C6EB-45EC-9B0A-A80E9F68278E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC6F4307-C6EB-45EC-9B0A-A80E9F68278E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC6F4307-C6EB-45EC-9B0A-A80E9F68278E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{285F8EEF-9F7A-48B7-BECB-1BF0BA85508A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{285F8EEF-9F7A-48B7-BECB-1BF0BA85508A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{285F8EEF-9F7A-48B7-BECB-1BF0BA85508A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{285F8EEF-9F7A-48B7-BECB-1BF0BA85508A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
