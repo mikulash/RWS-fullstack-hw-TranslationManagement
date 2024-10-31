@@ -1,4 +1,4 @@
-import {Configuration, TranslatorManagementApi} from "../generated-api";
+import {Configuration, TranslationJobApi, TranslatorManagementApi} from "../generated-api";
 
 
 const apiConfig = new Configuration({
@@ -6,5 +6,6 @@ const apiConfig = new Configuration({
 });
 
 const translatorApi = new TranslatorManagementApi(apiConfig);
+const translationJobApi = new TranslationJobApi(apiConfig);
 
-export default translatorApi;
+export {translatorApi, translationJobApi};
