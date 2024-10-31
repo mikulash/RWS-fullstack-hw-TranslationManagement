@@ -1,6 +1,7 @@
 ﻿import React, {useEffect, useState} from 'react';
 import {TranslatorDto, TranslatorStatus} from "../../generated-api";
 import {translatorApi} from "../ApiClientConfig.ts";
+import {TranslatorListItem} from "./TranslatorListItem.tsx";
 
 
 const TranslatorsList: React.FC = () => {
@@ -50,24 +51,11 @@ const TranslatorsList: React.FC = () => {
             <h1>Translators List</h1>
             <ul>
                 {translators.map((translator) => (
-                    <li key={translator.id}>
-                        <p>Name: {translator.name}</p>
-                        <p>Hourly Rate: {translator.hourlyRate}</p>
-                        <p>Status: {translator.status}</p>
-                        <div>
-                            <label>Update Status:</label>
-                            <select
-                                value={translator.status}
-                                onChange={(e) =>
-                                    handleStatusChange(translator.id!, e.target.value as TranslatorStatus)
-                                }
-                            >
-                                <option value={TranslatorStatus.Applicant}>Applicant</option>
-                                <option value={TranslatorStatus.Certified}>Certified</option>
-                                <option value={TranslatorStatus.Deleted}>Deleted</option>
-                            </select>
-                        </div>
-                    </li>
+                    <TranslatorListItem
+                        key={translator.id}
+                        translator={translator}
+                        handleStatusChange={handleStatusChange}
+                    />
                 ))}
             </ul>
         </div>
