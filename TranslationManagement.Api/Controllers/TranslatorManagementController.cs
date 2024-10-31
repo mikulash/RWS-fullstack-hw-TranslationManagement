@@ -3,7 +3,6 @@ using System.Linq;
 using BusinessLayer.Dtos;
 using BusinessLayer.Services;
 using DataAccessLayer.Enums;
-using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,7 +17,7 @@ public class TranslatorManagementController(
     : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<Translator>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<TranslatorDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GetTranslators()
     {
@@ -29,7 +28,7 @@ public class TranslatorManagementController(
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<Translator>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<TranslatorDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GetTranslatorsByName(string name)
     {
