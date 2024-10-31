@@ -1,16 +1,16 @@
-﻿using DataAccessLayer;
-using DataAccessLayer.Enums;
+﻿using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
 
-namespace TranslationManagement.Api.Tests.Utils;
+namespace DataAccessLayer.Utils;
 
 public static class DbSeeder
 {
     public static void Seed(AppDbContext context)
     {
         // Ensure database is created and clean for seeding
-        context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
+
+        if (context.TranslationJobs.Any() || context.Translators.Any()) return; // DB has been seeded
 
         // Seed TranslationJobs
         context.TranslationJobs.AddRange(

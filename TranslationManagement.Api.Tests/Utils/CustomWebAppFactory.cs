@@ -1,10 +1,11 @@
 ﻿using DataAccessLayer;
+using DataAccessLayer.Utils;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 
 namespace TranslationManagement.Api.Tests.Utils;
 
-public abstract class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
+public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
