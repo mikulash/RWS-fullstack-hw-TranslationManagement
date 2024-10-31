@@ -22,6 +22,17 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontendApp",
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:3001") // Replace with your React app's URL
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+        });
+
         services.AddControllers().AddJsonOptions(options =>
         {
             // This will serialize enums as strings
@@ -44,6 +55,7 @@ public class Startup
     {
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TranslationManagement.Api v1"));
+        app.UseCors("AllowFrontendApp");
 
         app.UseRouting();
         app.UseAuthorization();
