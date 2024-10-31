@@ -27,7 +27,7 @@ public class Startup
             options.AddPolicy("AllowFrontendApp",
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:3001") // Replace with your React app's URL
+                    builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                 });
