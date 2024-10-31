@@ -1,4 +1,11 @@
-# devtools
+# how to run
+
+run the following command in `/frontend` folder
+it will start the frontend app and also the backend
+
+```bash
+npm run start:all
+````
 
 ### DB migrations
 
