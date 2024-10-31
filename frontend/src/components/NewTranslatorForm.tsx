@@ -1,16 +1,35 @@
 import React, {useState} from 'react';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {CreateTranslatorDto, TranslatorStatus} from "../../generated-api";
 import {translatorApi} from "../ApiClientConfig.ts";
 
-
-const AddTranslatorForm: React.FC = () => {
+const NewTranslatorForm: React.FC = () => {
     const [name, setName] = useState<string>('');
     const [hourlyRate, setHourlyRate] = useState<string>('');
     const [status, setStatus] = useState<TranslatorStatus>(TranslatorStatus.Applicant);
     const [creditCardNumber, setCreditCardNumber] = useState<string>('');
     const [isUpdateSuccessMsg, setIsUpdateSuccessMsg] = useState<string>('');
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const queryClient = useQueryClient();
+
+    const addTranslatorMutation = useMutation({
+        mutationFn: async (newTranslator: CreateTranslatorDto) => {
+            await translatorApi.apiTranslatorsManagementAddTranslatorPost(newTranslator);
+        },
+        onSuccess: () => {
+            void queryClient.invalidateQueries({
+                queryKey: ['translators'],
+            });
+            setIsUpdateSuccessMsg('Translator added successfully');
+        },
+        onError: (error: Error) => {
+            console.error('Failed to add translator', error);
+            setIsUpdateSuccessMsg('Failed to add translator');
+        }
+    });
+
+
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         const newTranslator: CreateTranslatorDto = {
@@ -20,13 +39,7 @@ const AddTranslatorForm: React.FC = () => {
             creditCardNumber,
         };
 
-        try {
-            await translatorApi.apiTranslatorsManagementAddTranslatorPost(newTranslator);
-            setIsUpdateSuccessMsg('Translator added successfully');
-        } catch (err) {
-            setIsUpdateSuccessMsg('Failed to add translator');
-            console.error(err);
-        }
+        addTranslatorMutation.mutate(newTranslator);
     };
 
     return (
@@ -64,4 +77,4 @@ const AddTranslatorForm: React.FC = () => {
     );
 };
 
-export default AddTranslatorForm;
+export default NewTranslatorForm;

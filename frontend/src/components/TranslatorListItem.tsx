@@ -1,9 +1,27 @@
 import {TranslatorDto, TranslatorStatus} from "../../generated-api";
+import {translatorApi} from "../ApiClientConfig.ts";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
-export const TranslatorListItem = ({translator, handleStatusChange}: {
+export const TranslatorListItem = ({translator}: {
     translator: TranslatorDto,
-    handleStatusChange: (id: number, status: TranslatorStatus) => void
 }) => {
+
+    const queryClient = useQueryClient();
+    const statusMutation = useMutation({
+        mutationFn: async (newStatus: TranslatorStatus) => {
+            await translatorApi.apiTranslatorsManagementUpdateTranslatorStatusPut(
+                translator.id, newStatus
+            );
+        },
+        onSuccess: () => {
+            void queryClient.invalidateQueries({
+                queryKey: ['translators'],
+            });
+        },
+        onError: (error: Error) => {
+            console.error('Failed to update translator status', error);
+        }
+    });
     return (
         <li key={translator.id}>
             <p>Name: {translator.name}</p>
@@ -13,8 +31,9 @@ export const TranslatorListItem = ({translator, handleStatusChange}: {
                 <label>Update Status:</label>
                 <select
                     value={translator.status}
-                    onChange={(e) =>
-                        handleStatusChange(translator.id!, e.target.value as TranslatorStatus)
+                    onChange={(e) => {
+                        statusMutation.mutate(e.target.value as TranslatorStatus);
+                    }
                     }
                 >
                     <option value={TranslatorStatus.Applicant}>Applicant</option>
