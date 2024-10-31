@@ -44,7 +44,7 @@ public class TranslationJobController(
         return Ok();
     }
 
-    private async Task NotifyJobCreationAsync(string customerName, int maxRetries = 3)
+    private async Task NotifyJobCreationAsync(string customerName, int maxRetries = 5)
     {
         var notificationSvc = new UnreliableNotificationService();
         var attempts = 0;
