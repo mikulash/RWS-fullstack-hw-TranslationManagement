@@ -136,37 +136,37 @@ export interface TranslationJobDto {
 /**
  * 
  * @export
- * @interface Translator
+ * @interface TranslatorDto
  */
-export interface Translator {
+export interface TranslatorDto {
     /**
      * 
      * @type {number}
-     * @memberof Translator
+     * @memberof TranslatorDto
      */
     'id'?: number;
     /**
      * 
      * @type {string}
-     * @memberof Translator
+     * @memberof TranslatorDto
      */
     'name'?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof Translator
+     * @memberof TranslatorDto
      */
     'hourlyRate'?: string | null;
     /**
      * 
      * @type {TranslatorStatus}
-     * @memberof Translator
+     * @memberof TranslatorDto
      */
     'status'?: TranslatorStatus;
     /**
      * 
      * @type {string}
-     * @memberof Translator
+     * @memberof TranslatorDto
      */
     'creditCardNumber'?: string | null;
 }
@@ -679,7 +679,7 @@ export const TranslatorManagementApiFp = function(configuration?: Configuration)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiTranslatorsManagementGetTranslatorsByNameGet(name?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Translator>>> {
+        async apiTranslatorsManagementGetTranslatorsByNameGet(name?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TranslatorDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiTranslatorsManagementGetTranslatorsByNameGet(name, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['TranslatorManagementApi.apiTranslatorsManagementGetTranslatorsByNameGet']?.[localVarOperationServerIndex]?.url;
@@ -690,7 +690,7 @@ export const TranslatorManagementApiFp = function(configuration?: Configuration)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiTranslatorsManagementGetTranslatorsGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Translator>>> {
+        async apiTranslatorsManagementGetTranslatorsGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TranslatorDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiTranslatorsManagementGetTranslatorsGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['TranslatorManagementApi.apiTranslatorsManagementGetTranslatorsGet']?.[localVarOperationServerIndex]?.url;
@@ -734,7 +734,7 @@ export const TranslatorManagementApiFactory = function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiTranslatorsManagementGetTranslatorsByNameGet(name?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<Array<Translator>> {
+        apiTranslatorsManagementGetTranslatorsByNameGet(name?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<Array<TranslatorDto>> {
             return localVarFp.apiTranslatorsManagementGetTranslatorsByNameGet(name, options).then((request) => request(axios, basePath));
         },
         /**
@@ -742,7 +742,7 @@ export const TranslatorManagementApiFactory = function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiTranslatorsManagementGetTranslatorsGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<Translator>> {
+        apiTranslatorsManagementGetTranslatorsGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<TranslatorDto>> {
             return localVarFp.apiTranslatorsManagementGetTranslatorsGet(options).then((request) => request(axios, basePath));
         },
         /**
