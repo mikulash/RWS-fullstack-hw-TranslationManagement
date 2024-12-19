@@ -1,9 +1,11 @@
 # how to run
+uses c# version 12 and net8.0
 
-run the following command in `/frontend` folder
-it will start the frontend app and also the backend
+run the following command to start the app
 
 ```bash
+cd frontend
+npm install
 npm run start:all
 ````
 
