@@ -22,24 +22,23 @@ public class TranslationJobController(
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<TranslationJobDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetJobs()
+    public async Task<IActionResult> GetJobs()
     {
-        var jobs = translationJobService.GetJobs();
+        var jobs = await translationJobService.GetJobsAsync();
         if (!jobs.Any()) return NotFound();
 
         return Ok(jobs);
     }
 
-
     [HttpPost]
     [ProducesResponseType(typeof(IEnumerable<TranslationJobDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult CreateJob(CreateTranslationJobDto job)
+    public async Task<IActionResult> CreateJob(CreateTranslationJobDto job)
     {
-        var retval = translationJobService.CreateTranslationJob(job);
+        var retval = await translationJobService.CreateTranslationJobAsync(job);
         if (!retval) return BadRequest();
 
-        Task.Run(async () => { await NotifyJobCreationAsync(job.CustomerName); });
+        _ = Task.Run(async () => { await NotifyJobCreationAsync(job.CustomerName); });
 
         return Ok();
     }
@@ -53,12 +52,15 @@ public class TranslationJobController(
             try
             {
                 var result = await notificationSvc.SendNotification("Job created for customer: " + customerName);
-                if (result) logger.LogInformation("Notification sent successfully");
+                if (result)
+                {
+                    logger.LogInformation("Notification sent successfully");
+                    return;
+                }
             }
             catch (ApplicationException ex)
             {
-                logger.LogError(ex, "Attempt {Attempt} failed with error: {ErrorMessage}", attempts + 1,
-                    ex.Message);
+                logger.LogError(ex, "Attempt {Attempt} failed with error: {ErrorMessage}", attempts + 1, ex.Message);
             }
 
             attempts++;
@@ -70,13 +72,13 @@ public class TranslationJobController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult CreateJobWithFile(IFormFile file, string customer)
+    public async Task<IActionResult> CreateJobWithFile(IFormFile file, string customer)
     {
         try
         {
             if (file.Length == 0) return BadRequest("File is empty");
 
-            var result = translationJobService.CreateJobWithFile(file, customer);
+            var result = await translationJobService.CreateJobWithFileAsync(file, customer);
             return result ? Ok() : BadRequest();
         }
         catch (InvalidOperationException e)
@@ -99,12 +101,10 @@ public class TranslationJobController(
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult UpdateJobStatus(int jobId, JobStatus newStatus = JobStatus.New)
+    public async Task<IActionResult> UpdateJobStatus(int jobId, JobStatus newStatus = JobStatus.New)
     {
-        logger.LogInformation(
-            "Job status update request received: {NewStatus} for job {JobId}",
-            newStatus, jobId);
-        var result = translationJobService.UpdateJobStatus(jobId, newStatus);
+        logger.LogInformation("Job status update request received: {NewStatus} for job {JobId}", newStatus, jobId);
+        var result = await translationJobService.UpdateJobStatusAsync(jobId, newStatus);
         return result ? Ok() : BadRequest();
     }
 }

@@ -6,11 +6,11 @@ namespace BusinessLayer.Services;
 
 public interface ITranslationJobService
 {
-    public IEnumerable<TranslationJobDto> GetJobs();
+    Task<IEnumerable<TranslationJobDto>> GetJobsAsync();
 
-    bool CreateTranslationJob(CreateTranslationJobDto createTranslationJobDto);
+    Task<bool> CreateTranslationJobAsync(CreateTranslationJobDto createTranslationJobDto);
 
-    public bool UpdateJobStatus(int jobId, JobStatus status);
+    Task<bool> UpdateJobStatusAsync(int jobId, JobStatus status);
 
-    public bool CreateJobWithFile(IFormFile file, string customer);
+    Task<bool> CreateJobWithFileAsync(IFormFile file, string customer);
 }

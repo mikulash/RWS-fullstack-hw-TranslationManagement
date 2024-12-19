@@ -9,55 +9,64 @@ using Microsoft.Extensions.Configuration;
 
 namespace BusinessLayer.Services;
 
-public class TranslationJobService(IUnitOfWork unitOfWork, IConfiguration configuration) : ITranslationJobService
+public class TranslationJobService : ITranslationJobService
 {
-    private double _currentPricePerCharacter
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IConfiguration _configuration;
+
+    public TranslationJobService(IUnitOfWork unitOfWork, IConfiguration configuration)
+    {
+        _unitOfWork = unitOfWork;
+        _configuration = configuration;
+    }
+
+    private double CurrentPricePerCharacter
     {
         get
         {
             const double defaultPricePerCharacter = 0.01;
-            var price = configuration["PricePerCharacter"];
+            var price = _configuration["PricePerCharacter"];
 
             if (price == null || !double.TryParse(price, out var parsedPrice)) return defaultPricePerCharacter;
             return parsedPrice;
         }
     }
 
-    public IEnumerable<TranslationJobDto> GetJobs()
+    public async Task<IEnumerable<TranslationJobDto>> GetJobsAsync()
     {
-        var translationJobs = unitOfWork.TranslationJobs.GetAllAsync().Result;
+        var translationJobs = await _unitOfWork.TranslationJobs.GetAllAsync();
         return translationJobs.Adapt<IEnumerable<TranslationJobDto>>();
     }
 
-    public bool CreateTranslationJob(CreateTranslationJobDto createTranslationJobDto)
+    public async Task<bool> CreateTranslationJobAsync(CreateTranslationJobDto createTranslationJobDto)
     {
         var translationJob = createTranslationJobDto.Adapt<TranslationJob>();
         translationJob.Status = JobStatus.New;
         translationJob.Price = CalculatePrice(translationJob.OriginalContent);
-        unitOfWork.TranslationJobs.Add(translationJob);
-        return unitOfWork.Commit().Result;
+        _unitOfWork.TranslationJobs.Add(translationJob);
+        return await _unitOfWork.Commit();
     }
 
-    public bool UpdateJobStatus(int jobId, JobStatus status)
+    public async Task<bool> UpdateJobStatusAsync(int jobId, JobStatus status)
     {
-        var translationJob = unitOfWork.TranslationJobs.GetByIdAsync(jobId).Result;
+        var translationJob = await _unitOfWork.TranslationJobs.GetByIdAsync(jobId);
         if (translationJob == null) return false;
 
         translationJob.Status = status;
-        unitOfWork.TranslationJobs.Update(translationJob);
-        return unitOfWork.Commit().Result;
+        _unitOfWork.TranslationJobs.Update(translationJob);
+        return await _unitOfWork.Commit();
     }
 
-    public bool CreateJobWithFile(IFormFile file, string customer)
+    public async Task<bool> CreateJobWithFileAsync(IFormFile file, string customer)
     {
         var parser = new JobFileParserContext(file.FileName);
         var newJob = parser.Parse(file, customer);
 
-        return CreateTranslationJob(newJob);
+        return await CreateTranslationJobAsync(newJob);
     }
 
     private double CalculatePrice(string content)
     {
-        return content.Length * _currentPricePerCharacter;
+        return content.Length * CurrentPricePerCharacter;
     }
 }
