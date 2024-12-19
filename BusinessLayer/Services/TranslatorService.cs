@@ -6,34 +6,41 @@ using Mapster;
 
 namespace BusinessLayer.Services;
 
-public class TranslatorService(IUnitOfWork unitOfWork) : ITranslatorService
+public class TranslatorService : ITranslatorService
 {
-    public IEnumerable<TranslatorDto> GetAllTranslators()
+    private readonly IUnitOfWork _unitOfWork;
+
+    public TranslatorService(IUnitOfWork unitOfWork)
     {
-        var translators = unitOfWork.Translators.GetAllAsync().Result;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<IEnumerable<TranslatorDto>> GetAllTranslatorsAsync()
+    {
+        var translators = await _unitOfWork.Translators.GetAllAsync();
         return translators.Adapt<IEnumerable<TranslatorDto>>();
     }
 
-    public IEnumerable<TranslatorDto> GetTranslatorsByName(string name)
+    public async Task<IEnumerable<TranslatorDto>> GetTranslatorsByNameAsync(string name)
     {
-        var translators = unitOfWork.Translators.FindByNameAsync(name);
+        var translators = await _unitOfWork.Translators.FindByNameAsync(name);
         return translators.Adapt<IEnumerable<TranslatorDto>>();
     }
 
-    public bool AddTranslator(CreateTranslatorDto translatorDto)
+    public async Task<bool> AddTranslatorAsync(CreateTranslatorDto translatorDto)
     {
         var translator = translatorDto.Adapt<Translator>();
-        unitOfWork.Translators.Add(translator);
-        return unitOfWork.Commit().Result;
+        _unitOfWork.Translators.Add(translator);
+        return await _unitOfWork.Commit();
     }
 
-    public bool UpdateTranslatorStatus(int translatorId, TranslatorStatus newStatus)
+    public async Task<bool> UpdateTranslatorStatusAsync(int translatorId, TranslatorStatus newStatus)
     {
-        var translator = unitOfWork.Translators.GetByIdAsync(translatorId).Result;
+        var translator = await _unitOfWork.Translators.GetByIdAsync(translatorId);
         if (translator == null) throw new KeyNotFoundException("Translator not found");
 
         translator.Status = newStatus;
-        unitOfWork.Translators.Update(translator);
-        return unitOfWork.Commit().Result;
+        _unitOfWork.Translators.Update(translator);
+        return await _unitOfWork.Commit();
     }
 }

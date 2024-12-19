@@ -5,9 +5,9 @@ namespace BusinessLayer.Services;
 
 public interface ITranslatorService
 {
-    public IEnumerable<TranslatorDto> GetAllTranslators();
-    public IEnumerable<TranslatorDto> GetTranslatorsByName(string name);
+    Task<IEnumerable<TranslatorDto>> GetAllTranslatorsAsync();
+    Task<IEnumerable<TranslatorDto>> GetTranslatorsByNameAsync(string name);
 
-    public bool AddTranslator(CreateTranslatorDto translatorDto);
-    public bool UpdateTranslatorStatus(int translatorId, TranslatorStatus newStatus);
+    Task<bool> AddTranslatorAsync(CreateTranslatorDto translatorDto);
+    Task<bool> UpdateTranslatorStatusAsync(int translatorId, TranslatorStatus newStatus);
 }
